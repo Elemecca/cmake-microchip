@@ -14,16 +14,17 @@
 # this module is called by `Platform/MicrochipMCU-C`
 # to provide information specific to the XC16 compiler
 
-
-# set the (default) path to XC16
-set(MICROCHIP_XC16_PATH "/opt/microchip/xc16/v1.25"
-    CACHE PATH "the path at which Microchip XC16 is installed"
+include(MicrochipPathSearch)
+MICROCHIP_PATH_SEARCH(MICROCHIP_XC16_PATH xc16
+    CACHE "the path to a Microchip XC16 installation"
+    BAD_VERSIONS 1.26
 )
 
-# validate the XC16 path
-if(NOT EXISTS ${MICROCHIP_XC16_PATH})
+if(NOT MICROCHIP_XC16_PATH)
     message(FATAL_ERROR
-        "XC16 path '${XC16_PATH}' does not exist"
+        "No Microchip XC16 compiler was found. Please provide the path"
+        " to an XC16 installation on the command line, for example:\n"
+        "cmake -DMICROCHIP_XC16_PATH=/opt/microchip/xc16/v1.25 ."
     )
 endif()
 
