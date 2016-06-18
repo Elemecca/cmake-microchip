@@ -22,3 +22,10 @@ else()
         " is supported yet."
     )
 endif()
+
+if(MICROCHIP_C_COMPILER_ID)
+    message(STATUS
+        "Using Microchip C compiler ${MICROCHIP_C_COMPILER_ID}"
+        " ${MICROCHIP_C_COMPILER_VERSION}"
+    )
+endif()

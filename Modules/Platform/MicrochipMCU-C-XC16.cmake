@@ -27,97 +27,93 @@ if(NOT EXISTS ${MICROCHIP_XC16_PATH})
     )
 endif()
 
-# ensure that only the cross toolchain is searched for
-# tools, libraries, include files, and other similar things
 set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC16_PATH})
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-# set up the toolchain executables
-find_program(CMAKE_C_COMPILER   xc16-gcc)
-find_program(CMAKE_AR           xc16-ar)
-find_program(CMAKE_LINKER       xc16-ld)
-find_program(CMAKE_NM           xc16-nm)
-find_program(CMAKE_OBJDUMP      xc16-objdump)
-find_program(CMAKE_RANLIB       xc16-ranlib)
-find_program(CMAKE_STRIP        xc16-strip)
-find_program(XC16_BIN2HEX       xc16-bin2hex)
 
-# verify the comiler was found
-if(NOT CMAKE_C_COMPILER)
-    message(FATAL_ERROR
-        "XC16 path '${XC16_PATH}'"
-        " does not contain an XC16 compiler"
+
+# Unfortunately the normal CMake compiler detection process doesn't work
+# with XC16. It functions by compiling a file which uses preprocessor
+# conditionals to determine the compiler type and version and puts that
+# information in string literals, then running `strings` on the output
+# file and parsing out the detected values. That fails for XC16 because
+# string literals are not packed contiguously and therefore `strings`
+# can't find them.
+#
+# In intermediate object files, XC16 handles character literals as
+# 16-bit integers and string literals as arrays of character literals.
+# The strings therefore appear in the file with a zero byte after each
+# character. See the "MPLAB XC16 C Compiler User's Guide" (DS50002071E)
+# section 8.9 "Literal Constant Types and Formats".
+#
+# In the final executable file that issue is resolved as by that point
+# the compiler has optimized the 16-bit character literals down to 8-bit
+# values. `strings` still doesn't work, however. Program memory on the
+# 16-bit MCUs uses 24-bit words but is addressed on 16-bit boundaries.
+# Each program word therefore has an extra addressable byte which
+# doesn't actually exist. In the executable file that byte is included
+# and always zero, so string literals are written as groups of three
+# characters separated by zero bytes.
+#
+#
+# We therefore have to implement compiler version detection ourselves.
+# Fortunately that's quite easy as we know we're dealing with XC16 and
+# it has a `--version` switch that produces both the GCC anc XC16
+# version numbers. We still allow CMake's feature detection and test
+# routines to run as they still find some useful information.
+
+
+find_program(CMAKE_C_COMPILER "xc16-gcc")
+
+
+# bypass CMake compiler detection
+set(CMAKE_C_COMPILER_ID_RUN 1)
+
+# set the compiler ID manually
+set(CMAKE_C_COMPILER_ID GNU)
+set(MICROCHIP_C_COMPILER_ID XC16)
+set(CMAKE_COMPILER_IS_GNUCC 1)
+
+# call the compiler to check its version
+function(_xc16_get_version)
+    execute_process(
+        COMMAND "${CMAKE_C_COMPILER}" "--version"
+        OUTPUT_VARIABLE output
+        ERROR_VARIABLE  output
+        RESULT_VARIABLE result
     )
-endif()
 
+    if(result)
+        message(FATAL_ERROR
+            "Calling '${CMAKE_C_COMPILER} --version' failed."
+        )
+    endif()
 
-# verify that the MCU is supported
-set(MICROCHIP_XC16_LINKER_SCRIPT "p${MICROCHIP_MCU_MODEL}.gld")
-set(MICROCHIP_XC16_SUPPORT_DIR
-    "${MICROCHIP_XC16_PATH}/support/${MICROCHIP_MCU_FAMILY}"
-)
-set(MICROCHIP_XC16_GLD_PATH
-    "${MICROCHIP_XC16_SUPPORT_DIR}/gld/${MICROCHIP_XC16_LINKER_SCRIPT}"
-)
-if(NOT EXISTS ${MICROCHIP_XC16_GLD_PATH})
-    message(SEND_ERROR
-        "MCU '${MICROCHIP_MCU}' is not supported: linker script"
-        " '${MICROCHIP_XC16_GLD_PATH}' does not exist."
-    )
-endif()
+    if(output MATCHES "([0-9]+[.0-9]+).*XC16, Microchip v([0-9]+\.[0-9]+)")
+        set(gnu_version  ${CMAKE_MATCH_1})
+        set(xc16_version ${CMAKE_MATCH_2})
+    else()
+        message(FATAL_ERROR
+            "Failed to parse output of '${CMAKE_C_COMPILER} --version'."
+        )
+    endif()
+
+    string(REPLACE "_" "." gnu_version  ${gnu_version})
+    string(REPLACE "_" "." xc16_version ${xc16_version})
+
+    set(CMAKE_C_COMPILER_VERSION ${gnu_version} PARENT_SCOPE)
+    set(MICROCHIP_C_COMPILER_VERSION ${xc16_version} PARENT_SCOPE)
+endfunction()
+_xc16_get_version()
+
+# set the default C standard manually
+# this is required by `Compiler/Gnu-C`
+set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 90)
 
 
 add_compile_options(
     "-mcpu=${MICROCHIP_MCU_MODEL}"
 )
-
 string(APPEND CMAKE_C_LINK_FLAGS
     " -mcpu=${MICROCHIP_MCU_MODEL}"
-    " -Wl,--script,${MICROCHIP_XC16_LINKER_SCRIPT}"
+    " -Wl,--script,p${MICROCHIP_MCU_MODEL}.gld"
 )
-
-
-# adds an Intel HEX conversion to the given target
-function(bin2hex target)
-    function(get_target_property_fallback var target)
-        set(result NOTFOUND)
-        foreach(property ${ARGN})
-            get_target_property(result ${target} ${property})
-            if(result)
-                break()
-            endif()
-        endforeach()
-        set(${var} ${result} PARENT_SCOPE)
-    endfunction()
-
-    get_target_property_fallback(in_f ${target}
-        RUNTIME_OUTPUT_NAME
-        OUTPUT_NAME
-        NAME
-    )
-
-    get_target_property_fallback(dir ${target}
-        RUNTIME_OUTPUT_DIRECTORY
-        BINARY_DIR
-    )
-
-    get_filename_component(out_f ${in_f} NAME_WE)
-    set(out_f "${out_f}.hex")
-
-    add_custom_command(
-        TARGET ${target} POST_BUILD
-        WORKING_DIRECTORY ${dir}
-        COMMAND ${XC16_BIN2HEX} ${in_f}
-        COMMENT "Creating HEX for ${target}"
-        BYPRODUCTS ${dir}/${out_f}
-        VERBATIM
-    )
-
-    set_property(DIRECTORY APPEND
-        PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
-            ${dir}/${out_f}
-    )
-endfunction()

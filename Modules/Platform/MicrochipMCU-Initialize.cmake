@@ -13,3 +13,11 @@
 
 # This module is loaded prior to the compiler search to set up enough of
 # the platform configuration that an appropriate compiler can be found.
+
+# ensure that only the cross toolchain is searched for
+# tools, libraries, include files, and other similar things
+set(CMAKE_FIND_ROOT_PATH "")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
