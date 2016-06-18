@@ -13,7 +13,7 @@
 
 function(MICROCHIP_PATH_SEARCH outvar target)
     set(options)
-    list(APPEND oneValueArgs "CACHE")
+    list(APPEND oneValueArgs CACHE STORE_VERSION)
     set(multiValueArgs BAD_VERSIONS)
     cmake_parse_arguments(SEARCH
         "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -87,8 +87,10 @@ function(MICROCHIP_PATH_SEARCH outvar target)
 
     if(best_good_path)
         set(result "${best_good_path}")
+        set(result_version "${best_good_version}")
     elseif(best_bad_path)
         set(result "${best_bad_path}")
+        set(result_version "${best_good_version}")
 
         message(WARNING
             "Version ${best_bad_version} of ${target} is known"
@@ -97,6 +99,7 @@ function(MICROCHIP_PATH_SEARCH outvar target)
         )
     else()
         set(result "${outvar}-NOTFOUND")
+        set(result_version "${SEARCH_STORE_VERSION}-NOTFOUND")
     endif()
 
     string(APPEND msg
@@ -115,4 +118,8 @@ function(MICROCHIP_PATH_SEARCH outvar target)
         )
     endif()
     set(${outvar} "${result}" PARENT_SCOPE)
+
+    if(SEARCH_STORE_VERSION)
+        set(${SEARCH_STORE_VERSION} "${result_version}" PARENT_SCOPE)
+    endif()
 endfunction()

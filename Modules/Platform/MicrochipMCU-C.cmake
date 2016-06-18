@@ -16,6 +16,8 @@
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_16")
     include(Platform/MicrochipMCU-C-XC16)
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_32")
+    include(Platform/MicrochipMCU-C-XC32)
 else()
     message(FATAL_ERROR
         "No C compiler for '${CMAKE_SYSTEM_PROCESSOR}'"
