@@ -20,20 +20,16 @@ easiest way is to add a submodule::
 
 Then add this snippet at the very top of your ``CMakeLists.txt``::
 
-    # make the Microchip support modules available
-    list(APPEND CMAKE_MODULE_PATH
-        "${CMAKE_CURRENT_SOURCE_DIR}/external/cmake-microchip/Modules"
-    )
-
     # set up the Microchip cross toolchain
-    set(CMAKE_TOOLCHAIN_FILE
-        external/cmake-microchip/Toolchains/xc16.cmake
-    )
+    set(CMAKE_TOOLCHAIN_FILE external/cmake-microchip/toolchain.cmake)
 
-The target MCU is set by the ``CMAKE_SYSTEM_PROCESSOR`` variable. It can
-be set on the CMake command line like so::
+    # set the default MCU model
+    set(MICROCHIP_MCU PIC24FJ32GB002)
 
-    cmake -DCMAKE_SYSTEM_PROCESSOR=PIC24FJ256GB004 .
+The target MCU is set by the ``MICROCHIP_MCU`` variable. It can be set
+in ``CMakeLists.txt`` as above or on the CMake command line like so::
+
+    cmake -DMICROCHIP_MCU=PIC24FJ256GB004 .
 
 Copying
 =======
