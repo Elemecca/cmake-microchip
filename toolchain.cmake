@@ -90,7 +90,7 @@ if(MICROCHIP_MCU STREQUAL "generic8")
 elseif(MICROCHIP_MCU STREQUAL "generic16")
     set(MICROCHIP_MCU_FAMILY   "generic")
     set(MICROCHIP_MCU_MODEL    "p30sim")
-    set(CMAKE_SYSTEM_PROCESSOR "PIC16")
+    set(CMAKE_SYSTEM_PROCESSOR "PIC_16")
 
 elseif(MICROCHIP_MCU STREQUAL "generic32")
     set(MICROCHIP_MCU_FAMILY   "generic")
