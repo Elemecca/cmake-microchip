@@ -20,6 +20,36 @@ MICROCHIP_PATH_SEARCH(MICROCHIP_XC32_PATH xc32
     STORE_VERSION MICROCHIP_C_COMPILER_VERSION
 )
 
+function(_xc32_get_version)
+    execute_process(
+        COMMAND "${CMAKE_C_COMPILER}" "--version"
+        OUTPUT_VARIABLE output
+        ERROR_VARIABLE  output
+        RESULT_VARIABLE result
+    )
+
+    if(result)
+        message(FATAL_ERROR
+            "Calling '${CMAKE_C_COMPILER} --version' failed."
+        )
+    endif()
+
+    if(output MATCHES "([0-9]+(\.[0-9]+)+).* MPLAB XC32 Compiler .*v([0-9]+(\.[0-9]+)+)")
+        set(gnu_version  ${CMAKE_MATCH_1})
+        set(xc32_version ${CMAKE_MATCH_3})
+    else()
+        message(FATAL_ERROR
+            "Failed to parse output of '${CMAKE_C_COMPILER} --version'."
+        )
+    endif()
+
+    string(REPLACE "_" "." gnu_version  ${gnu_version})
+    string(REPLACE "_" "." xc32_version ${xc32_version})
+
+    set(CMAKE_C_COMPILER_VERSION ${gnu_version} PARENT_SCOPE)
+    set(MICROCHIP_C_COMPILER_VERSION ${xc32_version} PARENT_SCOPE)
+endfunction()
+
 if(NOT MICROCHIP_XC32_PATH)
     message(FATAL_ERROR
         "No Microchip XC32 compiler was found. Please provide the path"
@@ -30,12 +60,36 @@ endif()
 
 set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 
-set(CMAKE_C_COMPILER xc32-gcc)
+#set(CMAKE_C_COMPILER xc32-gcc)
+find_program(CMAKE_C_COMPILER "xc32-gcc")
 set(MICROCHIP_C_COMPILER_ID XC32)
+set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 90)
+set(CMAKE_CXX_COMPILER_FORCED ON)
 
-add_compile_options(
+_xc32_get_version()
+
+set(link_flags "")
+set(compile_flags "")
+
+string(APPEND compile_flags
     "-mprocessor=${MICROCHIP_MCU_MODEL}"
 )
-string(APPEND CMAKE_C_LINK_FLAGS
+string(APPEND link_flags
     " -mprocessor=${MICROCHIP_MCU_MODEL}"
 )
+if(MICROCHIP_LINK_SCRIPT)
+    string(APPEND link_flags
+        " -Wl,--script=\"${MICROCHIP_LINK_SCRIPT}\""
+        )
+endif()
+
+
+add_compile_options(
+    ${compile_flags}
+)
+string(APPEND CMAKE_C_LINK_FLAGS
+    ${link_flags}
+)
+#message(STATUS ${CMAKE_C_LINK_FLAGS})
+set(MICROCHIP_C_LINK_FLAGS ${link_flags} CACHE STRING "link flag cached")
+set(MICROCHIP_C_COMPILE_FLAGS ${compile_flags} CACHE STRING "compile flag cached")

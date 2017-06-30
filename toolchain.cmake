@@ -23,7 +23,6 @@
 # CMP0057 (IN_LIST operator) since 3.3
 cmake_minimum_required(VERSION 3.3)
 
-
 # record the directory containing this script
 # it will be used as the base for finding our other files
 set(MICROCHIP_ROOT ${CMAKE_CURRENT_LIST_DIR})
@@ -116,5 +115,17 @@ elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
 else()
     message(FATAL_ERROR
         "Invalid MICROCHIP_MCU value '${MICROCHIP_MCU}'."
+    )
+endif()
+
+#En caso de estar ya configurado el compilador, restauro los flags
+message(STATUS "microchip toolchain")
+if(MICROCHIP_XC32_PATH)
+    message(STATUS "microchip toolchain2")
+    string(APPEND CMAKE_C_LINK_FLAGS
+        ${MICROCHIP_C_LINK_FLAGS}
+    )
+    add_compile_options(
+        ${MICROCHIP_C_COMPILE_FLAGS}
     )
 endif()
