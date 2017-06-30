@@ -62,6 +62,7 @@ set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 
 #set(CMAKE_C_COMPILER xc32-gcc)
 find_program(CMAKE_C_COMPILER "xc32-gcc")
+find_program(CMAKE_CXX_COMPILER "xc32-g++")
 set(MICROCHIP_C_COMPILER_ID XC32)
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 90)
 set(CMAKE_CXX_COMPILER_FORCED ON)
@@ -71,18 +72,33 @@ _xc32_get_version()
 set(link_flags "")
 set(compile_flags "")
 
-string(APPEND compile_flags
+list(APPEND compile_flags
     "-mprocessor=${MICROCHIP_MCU_MODEL}"
+    -x c
 )
 string(APPEND link_flags
     " -mprocessor=${MICROCHIP_MCU_MODEL}"
 )
-if(MICROCHIP_LINK_SCRIPT)
+if(MICROCHIP_LINK_SCRIPT OR MICROCHIP_MIN_HEAP_SIZE)
     string(APPEND link_flags
-        " -Wl,--script=\"${MICROCHIP_LINK_SCRIPT}\""
-        )
+            " -Wl"
+            )
+    if(MICROCHIP_LINK_SCRIPT)
+        string(APPEND link_flags
+            ",--script=\"${MICROCHIP_LINK_SCRIPT}\""
+            )
+    endif()
+    if(MICROCHIP_MIN_HEAP_SIZE)
+        string(APPEND link_flags
+            ",--defsym=_min_heap_size=${MICROCHIP_MIN_HEAP_SIZE}"
+            )
+    endif()
+    if(MICROCHIP_MAP_FILE)
+        string(APPEND link_flags
+            ",-Map=\"${MICROCHIP_MAP_FILE}\""
+            )
+    endif()
 endif()
-
 
 add_compile_options(
     ${compile_flags}

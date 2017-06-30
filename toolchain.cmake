@@ -121,7 +121,6 @@ endif()
 #En caso de estar ya configurado el compilador, restauro los flags
 message(STATUS "microchip toolchain")
 if(MICROCHIP_XC32_PATH)
-    message(STATUS "microchip toolchain2")
     string(APPEND CMAKE_C_LINK_FLAGS
         ${MICROCHIP_C_LINK_FLAGS}
     )
