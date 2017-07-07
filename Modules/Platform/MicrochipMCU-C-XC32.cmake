@@ -97,6 +97,10 @@ if(MICROCHIP_LINK_SCRIPT OR MICROCHIP_MIN_HEAP_SIZE)
         string(APPEND link_flags
             ",-Map=\"${MICROCHIP_MAP_FILE}\""
             )
+        set_property(DIRECTORY APPEND
+        PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+            "${MICROCHIP_MAP_FILE}"
+        )
     endif()
 endif()
 
