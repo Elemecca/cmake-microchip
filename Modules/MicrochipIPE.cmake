@@ -79,7 +79,8 @@ function(ipeRun target device)
     set(IPECMD ${Java_JAVA_EXECUTABLE} -jar ${MICROCHIP_IPECMD})
   
     add_custom_target(run DEPENDS deploit
-        COMMAND sh -c "cat ${device} | sed '/^\\s*$/d'"
+        #COMMAND sh -c "cat ${device} | sed '/^\\s*$/d'"
+        COMMAND sh -c "cat ${device}"
         VERBATIM
     )
 endfunction()
