@@ -23,3 +23,4 @@ set(CMAKE_SYSTEM_LIBRARY_PATH /lib)
 set(CMAKE_SYSTEM_PROGRAM_PATH /bin)
 
 include(MicrochipBin2Hex)
+include(MicrochipIPE)

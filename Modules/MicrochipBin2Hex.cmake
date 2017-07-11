@@ -12,7 +12,7 @@
 #  substitute the full License text for the above reference.)
 
 
-function(bin2hex target)
+function(add_bin2hex_target target)
     find_program(MICROCHIP_BIN2HEX
         NAMES ${_CMAKE_TOOLCHAIN_PREFIX}bin2hex bin2hex
         HINTS ${_CMAKE_TOOLCHAIN_LOCATION}
@@ -48,11 +48,24 @@ function(bin2hex target)
     set(out_f "${out_f}.hex")
 
     add_custom_command(
-        TARGET ${target} POST_BUILD
+        #TARGET ${target} POST_BUILD
+        OUTPUT ${dir}/${out_f}
+        DEPENDS ${target}
         WORKING_DIRECTORY ${dir}
         COMMAND "${MICROCHIP_BIN2HEX}" "${in_f}"
-        BYPRODUCTS ${dir}/${out_f}
         VERBATIM
+    )
+    add_custom_target(bin2hex_${target}
+        DEPENDS ${dir}/${out_f}
+    )
+    
+    if(NOT TARGET bin2hex)
+        add_custom_target(bin2hex ALL)
+        message(STATUS "bin2hex not exits")
+    endif()
+    
+    add_dependencies(bin2hex 
+        bin2hex_${target}
     )
 
     set_property(DIRECTORY APPEND
