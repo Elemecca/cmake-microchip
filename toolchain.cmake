@@ -102,10 +102,13 @@ elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
 
     if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_8")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     elseif(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_16)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_16")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     elseif(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_32)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_32")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     else()
         message(FATAL_ERROR
             "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
