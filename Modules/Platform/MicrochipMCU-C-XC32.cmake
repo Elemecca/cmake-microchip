@@ -61,11 +61,14 @@ endif()
 set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 
 #set(CMAKE_C_COMPILER xc32-gcc)
+find_program(CMAKE_ASM_COMPILER "xc32-gcc")
 find_program(CMAKE_C_COMPILER "xc32-gcc")
 find_program(CMAKE_CXX_COMPILER "xc32-g++")
 set(MICROCHIP_C_COMPILER_ID XC32)
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 90)
 set(CMAKE_CXX_COMPILER_FORCED ON)
+
+message(${CMAKE_ASM_COMPILER})
 
 _xc32_get_version()
 
@@ -74,7 +77,6 @@ set(compile_flags "")
 
 list(APPEND compile_flags
     "-mprocessor=${MICROCHIP_MCU_MODEL}"
-    -x c
 )
 string(APPEND link_flags
     " -mprocessor=${MICROCHIP_MCU_MODEL}"
