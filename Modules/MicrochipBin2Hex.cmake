@@ -61,7 +61,7 @@ function(add_bin2hex_target target)
     
     if(NOT TARGET bin2hex)
         add_custom_target(bin2hex ALL)
-        message(STATUS "bin2hex not exits")
+        #message(STATUS "bin2hex not exits")
     endif()
     
     add_dependencies(bin2hex 
