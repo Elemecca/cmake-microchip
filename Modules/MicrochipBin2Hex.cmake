@@ -19,7 +19,7 @@ function(add_bin2hex_target target)
     )
 
     if(NOT MICROCHIP_BIN2HEX)
-        message(SEND_ERROR "No bin2hex program was found")
+        message(SEND_ERROR "No bin2hex program was found. _CMAKE_TOOLCHAIN_PREFIX=${_CMAKE_TOOLCHAIN_PREFIX}")
     endif()
 
     function(get_target_property_fallback var target)
