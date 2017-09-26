@@ -48,6 +48,10 @@ set(CMAKE_SYSTEM_NAME "MicrochipMCU")
 #
 # that makes it possible to set a per-project default model in
 # CMakeLists.txt that can still be overridden on the command line
+include(MicrochipBin2Hex)
+include(MicrochipIPE)
+include(MicrochipPathSearch)
+
 if(NOT MICROCHIP_MCU)
     set(MICROCHIP_MCU "generic16")
 endif()

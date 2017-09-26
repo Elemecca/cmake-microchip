@@ -61,7 +61,6 @@ endif()
 
 set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 
-#set(CMAKE_C_COMPILER xc32-gcc)
 find_program(CMAKE_ASM_COMPILER "xc32-gcc")
 find_program(CMAKE_C_COMPILER "xc32-gcc")
 find_program(CMAKE_CXX_COMPILER "xc32-g++")
