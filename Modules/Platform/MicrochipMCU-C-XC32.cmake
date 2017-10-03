@@ -30,12 +30,12 @@ endif()
 
 set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 
-set(CMAKE_C_COMPILER xc32-gcc)
+set(CMAKE_C_COMPILER ${MICROCHIP_XC32_PATH}/bin/xc32-gcc)
+if(WIN32)
+    set(CMAKE_C_COMPILER ${CMAKE_C_COMPILER}.exe)
+endif()
+
 set(MICROCHIP_C_COMPILER_ID XC32)
 
-add_compile_options(
-    "-mprocessor=${MICROCHIP_MCU_MODEL}"
-)
-string(APPEND CMAKE_C_LINK_FLAGS
-    " -mprocessor=${MICROCHIP_MCU_MODEL}"
-)
+set(CMAKE_C_FLAGS "-mprocessor=${MICROCHIP_MCU_MODEL}" CACHE STRING "" FORCE)
+set(CMAKE_EXECUTABLE_SUFFIX_C ".elf" CACHE STRING "" FORCE)
