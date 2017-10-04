@@ -11,6 +11,7 @@
 # (To distribute this file outside of CMake-Microchip,
 #  substitute the full License text for the above reference.)
 
+cmake_policy(SET CMP0057 NEW)
 function(MICROCHIP_PATH_SEARCH outvar target)
     set(options)
     list(APPEND oneValueArgs CACHE STORE_VERSION)
