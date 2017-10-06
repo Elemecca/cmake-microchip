@@ -16,6 +16,7 @@
 
 # for XC16, inject properties that may have been missed
 # see `Platform/MicrochipMCU-C-XC16` for explanation
+
 if(MICROCHIP_C_COMPILER_ID STREQUAL "XC16")
     if(NOT CMAKE_C_COMPILE_FEATURES)
         set(CMAKE_C_COMPILE_FEATURES "c_function_prototypes;c_restrict;c_variadic_macros")
