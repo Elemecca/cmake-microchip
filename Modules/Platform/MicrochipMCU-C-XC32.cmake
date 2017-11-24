@@ -15,11 +15,16 @@
 # to provide information specific to the XC32 compiler
 
 include(MicrochipPathSearch)
+
 set(_CMAKE_TOOLCHAIN_PREFIX "xc32-")
-MICROCHIP_PATH_SEARCH(MICROCHIP_XC32_PATH xc32
-    CACHE "the path to a Microchip XC32 installation"
-    STORE_VERSION MICROCHIP_C_COMPILER_VERSION
-)
+
+if(NOT MICROCHIP_XC32_PATH)
+    MICROCHIP_PATH_SEARCH(MICROCHIP_XC32_PATH xc32
+        CACHE "the path to a Microchip XC32 installation"
+        STORE_VERSION MICROCHIP_C_COMPILER_VERSION
+    )
+endif()
+
 
 function(_xc32_get_version)
     execute_process(
@@ -64,6 +69,7 @@ set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC32_PATH})
 find_program(CMAKE_ASM_COMPILER "xc32-gcc")
 find_program(CMAKE_C_COMPILER "xc32-gcc")
 find_program(CMAKE_CXX_COMPILER "xc32-g++")
+
 set(MICROCHIP_C_COMPILER_ID XC32)
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 90)
 set(CMAKE_CXX_COMPILER_FORCED ON)

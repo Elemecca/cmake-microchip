@@ -167,4 +167,8 @@ if(MICROCHIP_XC32_PATH)
     add_compile_options(
         ${compile_flags}
     )
+    add_compile_options(
+        "$<$<CONFIG:RELASE>:-DNDEBUG>"
+        "$<$<CONFIG:DEBUG>:-g>"
+    )
 endif()
