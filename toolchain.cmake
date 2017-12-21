@@ -101,7 +101,7 @@ elseif(MICROCHIP_MCU STREQUAL "generic32")
     set(CMAKE_SYSTEM_PROCESSOR "PIC_32")
 
 elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
-    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}")
+    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}" CACHE STRING "Familia de chip")
     set(MICROCHIP_MCU_MODEL  "${CMAKE_MATCH_2}${CMAKE_MATCH_3}" CACHE STRING "Modelo de chip")
 
     if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
@@ -130,6 +130,14 @@ message(STATUS "microchip toolchain")
 if(MICROCHIP_XC32_PATH)
     set(link_flags "")
     set(compile_flags "")
+    
+    if(MICROCHIP_MCU_FAMILY STREQUAL "PIC32MX")
+        set(lib_directory pic32mx)
+    else()
+        set(lib_directory pic32-libs)
+    endif()
+    
+    include_directories(SYSTEM ${MICROCHIP_XC32_PATH}/${lib_directory}/include)
 
     list(APPEND compile_flags
             "-mprocessor=${MICROCHIP_MCU_MODEL}"
