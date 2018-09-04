@@ -14,7 +14,9 @@
 # This module is loaded during the search for a C compiler
 # to provide the information necessary to find one.
 
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_16")
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_8")
+    include(Platform/MicrochipMCU-C-XC8)
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_16")
     include(Platform/MicrochipMCU-C-XC16)
 elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_32")
     include(Platform/MicrochipMCU-C-XC32)
