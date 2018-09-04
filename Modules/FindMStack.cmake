@@ -54,6 +54,7 @@ if(NOT MStack_FOUND)
     return()
 endif()
 
+
 add_library(MStack INTERFACE)
 target_sources(MStack INTERFACE
     ${MStack_USB_ROOT}/src/usb.c
@@ -62,10 +63,20 @@ target_include_directories(MStack INTERFACE
     ${MStack_ROOT}/usb/include
 )
 
+
 add_library(MStack_HID INTERFACE)
 target_sources(MStack_HID INTERFACE
     ${MStack_USB_ROOT}/src/usb_hid.c
 )
 target_link_libraries(MStack_HID
+    INTERFACE MStack
+)
+
+
+add_library(MStack_CDC INTERFACE)
+target_sources(MStack_CDC INTERFACE
+    ${MStack_USB_ROOT}/src/usb_cdc.c
+)
+target_link_libraries(MStack_CDC
     INTERFACE MStack
 )
