@@ -23,15 +23,29 @@ if(NOT MICROCHIP_XC8_PATH)
     message(FATAL_ERROR
         "No Microchip XC8 compiler was found. Please provide the path"
         " to an XC8 installation on the command line, for example:\n"
-        "cmake -DMICROCHIP_XC8_PATH=/opt/microchip/xc8/v2.00 ."
+        "    cmake -DMICROCHIP_XC8_PATH=/opt/microchip/xc8/v2.00 .."
     )
 endif()
 
 
-set(CMAKE_FIND_ROOT_PATH ${MICROCHIP_XC8_PATH})
+set(CMAKE_FIND_ROOT_PATH "${MICROCHIP_XC8_PATH}")
 
 # skip compiler search and just use XC8
-find_program(CMAKE_C_COMPILER "xc8")
+find_program(CMAKE_C_COMPILER "xc8"
+    PATHS "${MICROCHIP_XC8_PATH}"
+    PATH_SUFFIXES "bin"
+)
+
+if(NOT CMAKE_C_COMPILER)
+    message(FATAL_ERROR
+        "The XC8 compiler executable was not found, but what looks"
+        " like an XC8 installation was found at:\n"
+        "    ${MICROCHIP_XC8_PATH}\n"
+        "Please provide the path to a working XC8 installation on the"
+        " command line, for example:\n"
+        "    cmake -DMICROCHIP_XC8_PATH=/opt/microchip/xc8/v2.00 .."
+    )
+endif()
 
 # skip compiler ID since XC8 isn't supported by CMake's test file
 set(CMAKE_C_COMPILER_ID_RUN 1)
