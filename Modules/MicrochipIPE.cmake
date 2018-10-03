@@ -3,6 +3,10 @@ include(MicrochipPathSearch)
 
 find_package(Java COMPONENTS Runtime)
 
+
+set(PROGRAMER "ICD3" CACHE STRING "programador a utilizar")
+set_property(CACHE PROGRAMER PROPERTY STRINGS ICD3 ICD4 PK3 PK4 PM3 PKOB)
+
 #set(IPECMD ${Java_JAVA_EXECUTABLE} -jar "/opt/microchip/mplabx/v3.35/mplab_ipe/ipecmd.jar")
 set(IPE_LOG MPLABXLog.xml MPLABXLog.xml.0 MPLABXLog.xml.1 MPLABXLog.xml.2 MPLABXLog.xml.3 MPLABXLog.xml.4 MPLABXLog.xml.5 MPLABXLog.xml.6 MPLABXLog.xml.7)
 
@@ -36,7 +40,7 @@ function(add_ipe_deploit_target target)
 
     add_custom_command(
         DEPENDS ${target}.hex
-        COMMAND ${IPECMD} -f${target}.hex -M -P${MICROCHIP_MCU_MODEL} -TPICD3 -Y
+        COMMAND ${IPECMD} -f${target}.hex -M -P${MICROCHIP_MCU_MODEL} -TP${PROGRAMER} -Y
         OUTPUT log.0
         BYPRODUCTS ${IPE_LOG}
         COMMENT "Deploit to pic32"
@@ -59,7 +63,7 @@ function(ipeRestar target)
     set(IPECMD ${Java_JAVA_EXECUTABLE} -jar ${MICROCHIP_IPECMD})
     
     add_custom_target(restart DEPENDS deploit
-        COMMAND ${IPECMD} -f${target}.hex -P${MICROCHIP_MCU_MODEL} -TPICD3 -Y
+        COMMAND ${IPECMD} -f${target}.hex -P${MICROCHIP_MCU_MODEL} -TP${PROGRAMER} -Y
         VERBATIM
     )
 endfunction()
