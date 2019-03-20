@@ -1,5 +1,5 @@
 #=============================================================================
-# Copyright 2018 Sam Hanes
+# Copyright 2019 Sam Hanes
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file COPYING.txt for details.
@@ -12,22 +12,15 @@
 #  substitute the full License text for the above reference.)
 
 # called by `CMakeCInformation`
-# to configure the XC8 compiler interface for C files
-# this supports the `xc8` CLI driver in XC8 1.x
-# and the equivalent legacy CLI driver in XC8 2.x
+# to configure the XC8CC compiler interface for C files
+# this supports the xc8-cc CLI driver from XC8 v2.x
 
-
-set(MICROCHIP_XC8_MODE "free"
-    CACHE STRING "the license mode for XC8 (pro, std, free)"
-)
 
 string(APPEND CMAKE_C_FLAGS_INIT
-    # don't output the copyright notice on every invocation
-    "-Q"
-    # use the configured license mode and fail if it's not available
-    " --mode=${MICROCHIP_XC8_MODE} --nofallback"
     # build for the configured MCU model
-    " --chip=${MICROCHIP_MCU_MODEL}"
+    " -mcpu=${MICROCHIP_MCU_MODEL}"
+    # fail if the requested optimization level is forbidden by the license
+    " --nofallback"
 )
 
 set(CMAKE_C_OUTPUT_EXTENSION ".p1")
@@ -35,12 +28,12 @@ set(CMAKE_C_OUTPUT_EXTENSION ".p1")
 set(CMAKE_C_COMPILE_OBJECT)
 string(APPEND CMAKE_C_COMPILE_OBJECT
     "<CMAKE_C_COMPILER> <FLAGS> <DEFINES> <INCLUDES>"
-    "   -o<OBJECT>   --pass1 <SOURCE>"
+    "   -o <OBJECT>   -c <SOURCE>"
 )
 
 set(CMAKE_C_LINK_EXECUTABLE)
 string(APPEND CMAKE_C_LINK_EXECUTABLE
     "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS>"
     "   <OBJECTS>   <LINK_LIBRARIES>"
-    "   -o<TARGET>"
+    "   -o <TARGET>"
 )

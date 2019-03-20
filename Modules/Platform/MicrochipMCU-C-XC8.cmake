@@ -27,19 +27,64 @@ if(NOT MICROCHIP_XC8_PATH)
     )
 endif()
 
-
 set(CMAKE_FIND_ROOT_PATH "${MICROCHIP_XC8_PATH}")
 
-# skip compiler search and just use XC8
-find_program(CMAKE_C_COMPILER "xc8"
-    PATHS "${MICROCHIP_XC8_PATH}"
-    PATH_SUFFIXES "bin"
+
+if(NOT MICROCHIP_XC8_CLI)
+    set(MICROCHIP_XC8_CLI "xc8-cc")
+    set(_xc8_cli_default TRUE CACHE INTERNAL "" FORCE)
+endif()
+set(MICROCHIP_XC8_CLI "${MICROCHIP_XC8_CLI}"
+    CACHE STRING "the XC8 CLI driver to use ('xc8-cc' or 'xc8')"
 )
 
-if(NOT CMAKE_C_COMPILER)
+
+if(MICROCHIP_XC8_CLI STREQUAL "xc8-cc")
+    find_program(CMAKE_C_COMPILER "xc8-cc"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "bin"
+    )
+    set(_xc8_version_flag "--version")
+    set(CMAKE_C_COMPILER_ID "XC8CC")
+elseif(MICROCHIP_XC8_CLI STREQUAL "xc8")
+    find_program(CMAKE_C_COMPILER "xc8"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "bin"
+    )
+    set(_xc8_version_flag "--ver")
+    set(CMAKE_C_COMPILER_ID "XC8")
+else()
     message(FATAL_ERROR
-        "The XC8 compiler executable was not found, but what looks"
-        " like an XC8 installation was found at:\n"
+        "Invalid choice '${MICROCHIP_XC8_CLI}' for MICROCHIP_XC8_CLI."
+        " Please choose either 'xc8-cc' (recommended) or 'xc8'."
+        " See docs/xc8.md in your cmake-microchip installation for"
+        " details on this option."
+    )
+endif()
+
+
+if(NOT CMAKE_C_COMPILER)
+    if(_xc8_cli_default)
+        message(WARNING
+            "The XC8 command-line driver was not explicitly selected,"
+            " so the newer 'xc8-cc' driver is being used. This requires"
+            " XC8 version 2.00 or newer. If you want to use older versions"
+            " of XC8, or if you want to use the legacy 'xc8' driver in XC8"
+            " 2.00 or newer, add this line to your CMakeLists.txt before"
+            " the 'project' command:\n"
+            "    set(MICROCHIP_XC8_CLI xc8)\n"
+            "To suppress this message when XC8 is not found but continue"
+            " using the newer 'xc8-cc' driver, add this line to your"
+            " CMakeLists.txt before the 'project' command:\n"
+            "    set(MICROCHIP_XC8_CLI xc8-cc)\n"
+            "For more information on selecting a command-line driver"
+            " see docs/xc8.md in your cmake-microchip installation."
+        )
+    endif()
+
+    message(FATAL_ERROR
+        "The XC8 compiler executable ${MICROCHIP_XC8_CLI} was not found,"
+        " but what looks like an XC8 installation was found at:\n"
         "    ${MICROCHIP_XC8_PATH}\n"
         "Please provide the path to a working XC8 installation on the"
         " command line, for example:\n"
@@ -49,12 +94,11 @@ endif()
 
 # skip compiler ID since XC8 isn't supported by CMake's test file
 set(CMAKE_C_COMPILER_ID_RUN 1)
-set(CMAKE_C_COMPILER_ID "XC8")
 
 # call the compiler to check its version
 function(_xc8_get_version)
     execute_process(
-        COMMAND "${CMAKE_C_COMPILER}" "--ver"
+        COMMAND "${CMAKE_C_COMPILER}" "${_xc8_version_flag}"
         OUTPUT_VARIABLE output
         ERROR_VARIABLE  output
         RESULT_VARIABLE result
@@ -62,7 +106,7 @@ function(_xc8_get_version)
 
     if(result)
         message(FATAL_ERROR
-            "Calling '${CMAKE_C_COMPILER} --ver' failed."
+            "Calling '${CMAKE_C_COMPILER} ${_xc8_version_flag}' failed."
         )
     endif()
 
@@ -70,7 +114,7 @@ function(_xc8_get_version)
         set(CMAKE_C_COMPILER_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
     else()
         message(FATAL_ERROR
-            "Failed to parse output of '${CMAKE_C_COMPILER} --ver'."
+            "Failed to parse output of '${CMAKE_C_COMPILER} ${_xc8_version_flag}'."
         )
     endif()
 endfunction()
