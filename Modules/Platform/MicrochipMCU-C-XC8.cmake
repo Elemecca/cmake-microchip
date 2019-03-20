@@ -44,6 +44,10 @@ if(MICROCHIP_XC8_CLI STREQUAL "xc8-cc")
         PATHS "${MICROCHIP_XC8_PATH}"
         PATH_SUFFIXES "bin"
     )
+    find_program(CMAKE_AR "xc8-ar"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "bin"
+    )
     set(_xc8_version_flag "--version")
     set(CMAKE_C_COMPILER_ID "XC8CC")
 elseif(MICROCHIP_XC8_CLI STREQUAL "xc8")
