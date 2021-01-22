@@ -11,14 +11,14 @@
 # (To distribute this file outside of CMake-Microchip,
 #  substitute the full License text for the above reference.)
 
-# this module is called by `Platform/MicrochipMCU-C`
+# this module is called by `Platform/MicrochipMCU-CXX`
 # to provide information specific to the XC32 compiler
 
 include(MicrochipPathSearch)
 if(NOT MICROCHIP_XC32_PATH)
     MICROCHIP_PATH_SEARCH(MICROCHIP_XC32_PATH xc32
         CACHE "the path to a Microchip XC32 installation"
-        STORE_VERSION MICROCHIP_C_COMPILER_VERSION
+        STORE_VERSION MICROCHIP_CXX_COMPILER_VERSION
     )
 endif()
 
@@ -37,11 +37,10 @@ if(WIN32)
     string(APPEND OS_SUFFIX ".exe")
 endif()
 
-set(CMAKE_C_COMPILER ${MICROCHIP_XC32_PATH}/bin/xc32-gcc${OS_SUFFIX} CACHE STRING "" FORCE)
-set(CMAKE_BIN2HEX ${MICROCHIP_XC32_PATH}/bin/xc32-bin2hex${OS_SUFFIX} CACHE STRING "" FORCE)
-set(MICROCHIP_C_COMPILER_ID XC32)
+set(CMAKE_CXX_COMPILER ${MICROCHIP_XC32_PATH}/bin/xc32-g++${OS_SUFFIX} CACHE STRING "" FORCE)
+set(MICROCHIP_CXX_COMPILER_ID XC32)
 
-set(CMAKE_C_FLAGS "-mprocessor=${MICROCHIP_MCU_MODEL}" CACHE STRING "" FORCE)
-set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG" CACHE STRING "" FORCE)
-set(CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" FORCE)
-set(CMAKE_EXECUTABLE_SUFFIX_C ".elf" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "-mprocessor=${MICROCHIP_MCU_MODEL}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_DEBUG "-g" CACHE STRING "" FORCE)
+set(CMAKE_EXECUTABLE_SUFFIX_CXX ".elf" CACHE STRING "" FORCE)
