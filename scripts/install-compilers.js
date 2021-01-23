@@ -39,7 +39,7 @@ function download(urlStr) {
 
     fileStream.on("finish", () => {
       fileStream.close(() => {
-        fs.chmod(filePath, "+x", () => {
+        fs.chmod(filePath, "0755", () => {
           console.log("downloaded", fileName);
           resolve(filePath);
         });
