@@ -53,15 +53,21 @@ function install(execPath) {
     const execName = path.basename(execPath);
     console.log("running", execName);
 
+    const command = [
+      execPath,
+      "--mode", "unattended",
+      "--unattendedmodeui", "none",
+      "--LicenseType", "FreeMode",
+      "--netservername", "none",
+    ];
+
+    if (process.platform !== "win32") {
+      command.unshift("sudo");
+    }
+
     const child = child_process.spawn(
-      "sudo",
-      [
-        execPath,
-        "--mode", "unattended",
-        "--unattendedmodeui", "none",
-        "--LicenseType", "FreeMode",
-        "--netservername", "none",
-      ],
+      command[0],
+      command.slice(1),
       {
         stdio: ["ignore", "inherit", "inherit"],
       }
