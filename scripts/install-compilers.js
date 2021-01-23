@@ -1,17 +1,22 @@
 "use strict";
 
 const fs = require("fs");
-const https = require("https");
+const http = require("http");
+const os = require("os");
 const path = require("path");
 
+const outdir = fs.mkdtempSync(path.join(os.tmpdir(), "xc-installers-"));
+console.log(`downloading installers to [${outdir}]`);
+
 function install(urlStr) {
-  console.log("downloading", urlStr);
+  console.log(`downloading [${urlStr}]`);
 
   const url = new URL(urlStr);
-  const filePath = path.join("tmp", path.basename(url.path));
+  const fileName = path.basename(url.pathname);
+  const filePath = path.join(outdir, fileName);
   const fileStream = fs.createWriteStream(filePath);
 
-  const request = https.get(url, (res) => {
+  const request = http.get(url, (res) => {
     if (res.statusCode != 200) {
       console.error(`failed to fetch [${urlStr}]: ${res.statusCode}`);
       process.exit(2);
@@ -32,7 +37,7 @@ function install(urlStr) {
 
   fileStream.on("finish", () => {
     fileStream.close(() => {
-      console.log(`downloaded [${url}]`);
+      console.log(`downloaded [${fileName}]`);
     });
   });
 }
