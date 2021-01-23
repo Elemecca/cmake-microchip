@@ -7,7 +7,7 @@ const path = require("path");
 function install(urlStr) {
   console.log("downloading", urlStr);
 
-  const url = new Url(urlStr);
+  const url = new URL(urlStr);
   const filePath = path.join("tmp", path.basename(url.path));
   const fileStream = fs.createWriteStream(filePath);
 
