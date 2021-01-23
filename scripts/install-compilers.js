@@ -38,8 +38,8 @@ function download(urlStr) {
     });
 
     fileStream.on("finish", () => {
-      fs.fchmod(fileStream, "+x", () => {
-        fileStream.close(() => {
+      fileStream.close(() => {
+        fs.chmod(filePath, "+x", () => {
           console.log("downloaded", fileName);
           resolve(filePath);
         });
