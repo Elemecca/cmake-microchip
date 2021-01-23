@@ -7,11 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: >
+      - name: Install Microchip Compilers
+        run: >
           node scripts/install-compilers.js
-          http://ww1.microchip.com/downloads/en/DeviceDoc/xc8-v2.20-full-install-linux-installer.run
-          http://ww1.microchip.com/downloads/en/DeviceDoc/xc16-v1.60-full-install-linux64-installer.run
-          http://ww1.microchip.com/downloads/en/DeviceDoc/xc32-v2.41-full-install-linux-installer.run
+          "http://ww1.microchip.com/downloads/en/DeviceDoc/xc8-v2.20-full-install-linux-installer.run"
+          "http://ww1.microchip.com/downloads/en/DeviceDoc/xc16-v1.60-full-install-linux64-installer.run"
+          "http://ww1.microchip.com/downloads/en/DeviceDoc/xc32-v2.41-full-install-linux-installer.run"
       - run: du -sh /opt/microchip/*
       - run: /opt/microchip/xc8/*/bin/xc8 --ver
       - run: /opt/microchip/xc16/*/bin/xc16-gcc --version

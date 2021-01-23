@@ -53,6 +53,8 @@ function install(execPath) {
     const execName = path.basename(execPath);
     console.log("running", execName);
 
+    return resolve();
+
     const child = child_process.spawn(
       "sudo",
       [
@@ -74,6 +76,7 @@ function install(execPath) {
 
     child.on("exit", (code, signal) => {
       if (code === 0) {
+        console.log("finished running", execName);
         resolve();
       } else {
         console.error("failed to run", execName, code || signal);
@@ -87,6 +90,7 @@ Promise.all(
   process.argv.slice(2).map((url) => download(url).then(install))
 ).then(() => {
   fs.promises.rm(outdir, {recursive: true});
+  console.log("done");
 }).catch(() => {
   process.exit(2);
 });
