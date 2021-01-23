@@ -12,6 +12,8 @@ jobs:
           http://ww1.microchip.com/downloads/en/DeviceDoc/xc8-v2.20-full-install-linux-installer.run
           http://ww1.microchip.com/downloads/en/DeviceDoc/xc16-v1.60-full-install-linux64-installer.run
           http://ww1.microchip.com/downloads/en/DeviceDoc/xc32-v2.41-full-install-linux-installer.run
-      - run: sha256sum /tmp/xc-installers-*/*
-      - run: du -sh /tmp/xc-installers-*/*
+      - run: du -sh /opt/microchip/*
+      - run: /opt/microchip/xc8/*/bin/xc8 --ver
+      - run: /opt/microchip/xc16/*/bin/xc16-gcc --version
+      - run: /opt/microchip/xc32/*/bin/xc32-gcc --version
 
