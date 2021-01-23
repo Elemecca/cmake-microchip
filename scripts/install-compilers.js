@@ -53,8 +53,6 @@ function install(execPath) {
     const execName = path.basename(execPath);
     console.log("running", execName);
 
-    return resolve();
-
     const child = child_process.spawn(
       "sudo",
       [
