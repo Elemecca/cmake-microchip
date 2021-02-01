@@ -11,14 +11,18 @@
 # (To distribute this file outside of CMake-Microchip,
 #  substitute the full License text for the above reference.)
 
-# This module is loaded prior to the compiler search to set up enough of
-# the platform configuration that an appropriate compiler can be found.
+# this module is called after the compiler has been determined
+# to set up information specific to Microchip GNU CXX compilers
 
-# ensure that only the cross toolchain is searched for
-# tools, libraries, include files, and other similar things
-set(CMAKE_FIND_ROOT_PATH "")
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-set(CMAKE_CXX_COMPILER_FORCED ON)
+# for XC32, inject properties that may have been missed
+# see `Platform/MicrochipMCU-CXX-XC32` for explanation
+
+if(MICROCHIP_CXX_COMPILER_ID STREQUAL "XC32")
+    if(NOT CMAKE_CXX_SIZEOF_DATA_PTR)
+        set(CMAKE_CXX_SIZEOF_DATA_PTR 4)
+    endif()
+
+    if(NOT CMAKE_CXX_COMPILER_ABI)
+        set(CMAKE_CXX_COMPILER_ABI ELF)
+    endif()
+endif()
