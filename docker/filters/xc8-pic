@@ -1,0 +1,38 @@
++ /xc8/
++ /xc8/v*/
++ /xc8/v*/pic/
+
+#+ /xc8/v*/pic/bin/
+#+ /xc8/v*/pic/bin/aspic
+#+ /xc8/v*/pic/bin/cgpic
+#+ /xc8/v*/pic/bin/picc
+
++ /xc8/v*/pic/dat/
+
++ /xc8/v*/pic/dat/cfgdata/
+- /xc8/v*/pic/dat/cfgdata/18*
++ /xc8/v*/pic/dat/cfgdata/*
+
++ /xc8/v*/pic/dat/cfgmap/
+- /xc8/v*/pic/dat/cfgmap/18*
++ /xc8/v*/pic/dat/cfgmap/*
+
++ /xc8/v*/pic/dat/ini/
+- /xc8/v*/pic/dat/ini/18*
++ /xc8/v*/pic/dat/ini/*
+
++ /xc8/v*/pic/include/
++ /xc8/v*/pic/include/proc/
+- /xc8/v*/pic/include/proc/18*
+- /xc8/v*/pic/include/proc/pic18*
++ /xc8/v*/pic/include/proc/*
+
++ /xc8/v*/pic/lib/
++ /xc8/v*/pic/lib/*/
++ /xc8/v*/pic/lib/*/pic-*
+
++ /xc8/v*/pic/sources/
++ /xc8/v*/pic/sources/*/
++ /xc8/v*/pic/sources/*/pic/***
+
+- *

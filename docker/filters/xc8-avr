@@ -1,0 +1,10 @@
++ /xc8/
++ /xc8/v*/
+
++ /xc8/v*/bin/
++ /xc8/v*/bin/avr-*
+
++ /xc8/v*/avr/***
++ /xc8/v*/dfp/***
+
+- *
