@@ -32,9 +32,10 @@ RUN set -eux pipefail; \
     rm -f installer.run; \
     mkdir /opt/split; \
     rsync -a --filter='. /tmp/filters/xc8-core' /opt/microchip/ /opt/split/xc8-core; \
-    rsync -a --filter='. /tmp/filters/xc8-pic-core' /opt/microchip/ /opt/split/xc8-pic-core; \
     rsync -a --filter='. /tmp/filters/xc8-pic' /opt/microchip/ /opt/split/xc8-pic; \
+    rsync -a --filter='. /tmp/filters/xc8-pic16' /opt/microchip/ /opt/split/xc8-pic16; \
     rsync -a --filter='. /tmp/filters/xc8-pic18' /opt/microchip/ /opt/split/xc8-pic18; \
+    ln -s picc18 $(echo /opt/split/xc8-pic18/xc8/v*/pic/bin)/picc; \
     rsync -a --filter='. /tmp/filters/xc8-avr' /opt/microchip/ /opt/split/xc8-avr; \
     rm -rf /opt/microchip
 
@@ -71,12 +72,12 @@ COPY --from=install /opt/split/xc8-core /opt/microchip
 
 FROM core AS pic-core
 
-COPY --from=install /opt/split/xc8-pic-core /opt/microchip
-
-
-FROM pic-core AS pic
-
 COPY --from=install /opt/split/xc8-pic /opt/microchip
+
+
+FROM pic-core AS pic16
+
+COPY --from=install /opt/split/xc8-pic16 /opt/microchip
 
 
 FROM pic-core AS pic18

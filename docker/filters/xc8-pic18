@@ -2,10 +2,10 @@
 + /xc8/v*/
 + /xc8/v*/pic/
 
-#+ /xc8/v*/pic/bin/
-#+ /xc8/v*/pic/bin/aspic18
-#+ /xc8/v*/pic/bin/cgpic18
-#+ /xc8/v*/pic/bin/picc18
++ /xc8/v*/pic/bin/
++ /xc8/v*/pic/bin/aspic18
++ /xc8/v*/pic/bin/cgpic18
++ /xc8/v*/pic/bin/picc18
 
 + /xc8/v*/pic/dat/
 + /xc8/v*/pic/dat/cfgdata/
