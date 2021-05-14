@@ -59,6 +59,4 @@ function(bin2hex target)
         PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
             ${dir}/${out_f}
     )
-    
-    install(FILES ${out_f} TYPE BIN)
 endfunction()

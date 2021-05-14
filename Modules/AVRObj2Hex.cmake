@@ -57,6 +57,8 @@ function(avr_obj2hex target)
 
     set_property(DIRECTORY APPEND
         PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
-            ${dir}/${out_f}
+            ${dir}/$<CONFIG>/${out_f}
     )
+    
+    install(FILES ${dir}/$<CONFIG>/${out_f} TYPE BIN)
 endfunction()
