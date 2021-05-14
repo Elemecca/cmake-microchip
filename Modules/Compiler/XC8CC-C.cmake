@@ -19,9 +19,13 @@
 string(APPEND CMAKE_C_FLAGS_INIT
     # build for the configured MCU model
     " -mcpu=${MICROCHIP_MCU_MODEL}"
+)
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_8")
+    string(APPEND CMAKE_C_FLAGS_INIT
     # fail if the requested optimization level is forbidden by the license
     " --nofallback"
-)
+    )
+endif()
 
 set(CMAKE_C_OUTPUT_EXTENSION ".p1")
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")

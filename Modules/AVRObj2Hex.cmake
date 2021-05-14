@@ -12,14 +12,14 @@
 #  substitute the full License text for the above reference.)
 
 
-function(bin2hex target)
-    find_program(MICROCHIP_BIN2HEX
-        NAMES ${_CMAKE_TOOLCHAIN_PREFIX}bin2hex bin2hex
+function(avr_obj2hex target)
+    find_program(AVR_OBJ2HEX
+        NAMES ${_CMAKE_TOOLCHAIN_PREFIX}avr-objcopy avr-objcopy
         HINTS ${_CMAKE_TOOLCHAIN_LOCATION}
     )
 
-    if(NOT MICROCHIP_BIN2HEX)
-        message(SEND_ERROR "No bin2hex program was found")
+    if(NOT AVR_OBJ2HEX)
+        message(SEND_ERROR "No avr-objcopy program was found")
     endif()
 
     function(get_target_property_fallback var target)
@@ -45,13 +45,13 @@ function(bin2hex target)
     )
 
     get_filename_component(out_f ${in_f} NAME_WE)
-    set(out_f "${out_f}.hex")
+    set(out_f "${out_f}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.hex")
 
     add_custom_command(
         TARGET ${target} POST_BUILD
-        WORKING_DIRECTORY ${dir}
-        COMMAND "${MICROCHIP_BIN2HEX}" "${in_f}"
-        BYPRODUCTS ${dir}/${out_f}
+        WORKING_DIRECTORY ${dir}/$<CONFIG>
+        COMMAND "${AVR_OBJ2HEX}" -O ihex "${in_f}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.elf" "${out_f}"
+        BYPRODUCTS ${dir}/$<CONFIG>/${out_f}
         VERBATIM
     )
 
@@ -59,6 +59,4 @@ function(bin2hex target)
         PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
             ${dir}/${out_f}
     )
-    
-    install(FILES ${out_f} TYPE BIN)
 endfunction()
