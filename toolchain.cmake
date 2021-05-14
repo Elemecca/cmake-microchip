@@ -63,6 +63,7 @@ list(APPEND MICROCHIP_FAMILIES_8
     PIC18F
     ATtiny
     ATxmega
+    ATmega
 )
 
 # known 16-bit MCU families
