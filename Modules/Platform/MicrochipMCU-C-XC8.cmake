@@ -35,7 +35,7 @@ if(NOT MICROCHIP_XC8_CLI)
     set(_xc8_cli_default TRUE CACHE INTERNAL "" FORCE)
 endif()
 set(MICROCHIP_XC8_CLI "${MICROCHIP_XC8_CLI}"
-    CACHE STRING "the XC8 CLI driver to use ('xc8-cc' or 'xc8')"
+    CACHE STRING "the XC8 CLI driver to use ('xc8-cc', 'xc8' or 'avr-gcc')"
 )
 
 
@@ -57,10 +57,18 @@ elseif(MICROCHIP_XC8_CLI STREQUAL "xc8")
     )
     set(_xc8_version_flag "--ver")
     set(CMAKE_C_COMPILER_ID "XC8")
+elseif(MICROCHIP_XC8_CLI STREQUAL "avr-gcc")
+    find_program(CMAKE_C_COMPILER "avr-gcc"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "avr/bin"
+    )
+    set(_xc8_version_flag "--version")
+    set(CMAKE_C_COMPILER_ID "AVRGCC")
+
 else()
     message(FATAL_ERROR
         "Invalid choice '${MICROCHIP_XC8_CLI}' for MICROCHIP_XC8_CLI."
-        " Please choose either 'xc8-cc' (recommended) or 'xc8'."
+        " Please choose either 'xc8-cc' (recommended), 'xc8' or 'avr-gcc'."
         " See docs/xc8.md in your cmake-microchip installation for"
         " details on this option."
     )
@@ -101,6 +109,8 @@ set(CMAKE_C_COMPILER_ID_RUN 1)
 
 # call the compiler to check its version
 function(_xc8_get_version)
+    message(STATUS "COMMAND: ${CMAKE_C_COMPILER} ${_xc8_version_flag}")
+
     execute_process(
         COMMAND "${CMAKE_C_COMPILER}" "${_xc8_version_flag}"
         OUTPUT_VARIABLE output
@@ -116,6 +126,8 @@ function(_xc8_get_version)
 
     if(output MATCHES "XC8 C Compiler V([0-9]+\.[0-9]+)")
         set(CMAKE_C_COMPILER_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    elseif(output MATCHES "(avr-gcc)(.*\\)) ([0-9]+.[0-9]+.[0-9]+)")
+        set(CMAKE_C_COMPILER_VERSION ${CMAKE_MATCH_3} PARENT_SCOPE)
     else()
         message(FATAL_ERROR
             "Failed to parse output of '${CMAKE_C_COMPILER} ${_xc8_version_flag}'."
