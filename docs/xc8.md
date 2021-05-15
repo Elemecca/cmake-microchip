@@ -18,7 +18,7 @@ with XC16 and XC32. The old command-line driver `xc8` was retained for
 backwards compatibility.
 
 You can select which command-line driver to use by setting
-`MICROCHIP_XC8_CLI` to either `xc8-cc` or `xc8` in your `CMakeLists.txt`
+`MICROCHIP_XC8_CLI` to either `xc8-cc`, `xc8` or `avr-gcc` in your `CMakeLists.txt`
 before calling the `project` command (which is when compiler resolution
 occurs). For example:
 
