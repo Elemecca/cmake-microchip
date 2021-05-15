@@ -38,7 +38,6 @@ set(MICROCHIP_XC8_CLI "${MICROCHIP_XC8_CLI}"
     CACHE STRING "the XC8 CLI driver to use ('xc8-cc', 'xc8' or 'avr-gcc')"
 )
 
-
 if(MICROCHIP_XC8_CLI STREQUAL "xc8-cc")
     find_program(CMAKE_C_COMPILER "xc8-cc"
         PATHS "${MICROCHIP_XC8_PATH}"
@@ -50,6 +49,7 @@ if(MICROCHIP_XC8_CLI STREQUAL "xc8-cc")
     )
     set(_xc8_version_flag "--version")
     set(CMAKE_C_COMPILER_ID "XC8CC")
+    
 elseif(MICROCHIP_XC8_CLI STREQUAL "xc8")
     find_program(CMAKE_C_COMPILER "xc8"
         PATHS "${MICROCHIP_XC8_PATH}"
@@ -57,14 +57,24 @@ elseif(MICROCHIP_XC8_CLI STREQUAL "xc8")
     )
     set(_xc8_version_flag "--ver")
     set(CMAKE_C_COMPILER_ID "XC8")
+    
 elseif(MICROCHIP_XC8_CLI STREQUAL "avr-gcc")
     find_program(CMAKE_C_COMPILER "avr-gcc"
         PATHS "${MICROCHIP_XC8_PATH}"
         PATH_SUFFIXES "avr/bin"
     )
+    find_program(CMAKE_CXX_COMPILER "avr-gcc"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "avr/bin"
+    )
+    find_program(CMAKE_AR "avr-ar"
+        PATHS "${MICROCHIP_XC8_PATH}"
+        PATH_SUFFIXES "avr/bin"
+    )
     set(_xc8_version_flag "--version")
     set(CMAKE_C_COMPILER_ID "AVRGCC")
-
+    set(CMAKE_CXX_COMPILER_ID "AVRGCC")
+    
 else()
     message(FATAL_ERROR
         "Invalid choice '${MICROCHIP_XC8_CLI}' for MICROCHIP_XC8_CLI."
@@ -73,7 +83,6 @@ else()
         " details on this option."
     )
 endif()
-
 
 if(NOT CMAKE_C_COMPILER)
     if(_xc8_cli_default)
@@ -106,18 +115,17 @@ endif()
 
 # skip compiler ID since XC8 isn't supported by CMake's test file
 set(CMAKE_C_COMPILER_ID_RUN 1)
+set(CMAKE_CXX_COMPILER_ID_RUN 1)
 
 # call the compiler to check its version
 function(_xc8_get_version)
-    message(STATUS "COMMAND: ${CMAKE_C_COMPILER} ${_xc8_version_flag}")
-
     execute_process(
         COMMAND "${CMAKE_C_COMPILER}" "${_xc8_version_flag}"
         OUTPUT_VARIABLE output
         ERROR_VARIABLE  output
         RESULT_VARIABLE result
     )
-
+    
     if(result)
         message(FATAL_ERROR
             "Calling '${CMAKE_C_COMPILER} ${_xc8_version_flag}' failed."
@@ -128,6 +136,7 @@ function(_xc8_get_version)
         set(CMAKE_C_COMPILER_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
     elseif(output MATCHES "(avr-gcc)(.*\\)) ([0-9]+.[0-9]+.[0-9]+)")
         set(CMAKE_C_COMPILER_VERSION ${CMAKE_MATCH_3} PARENT_SCOPE)
+        set(CMAKE_CXX_COMPILER_VERSION ${CMAKE_MATCH_3} PARENT_SCOPE)
     else()
         message(FATAL_ERROR
             "Failed to parse output of '${CMAKE_C_COMPILER} ${_xc8_version_flag}'."
