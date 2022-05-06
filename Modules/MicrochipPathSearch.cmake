@@ -47,6 +47,8 @@ function(MICROCHIP_PATH_SEARCH outvar target)
             "C:/Program Files/Microchip"
             "C:/Program Files (x86)/Microchip"
         )
+    elseif(CMAKE_HOST_SYSTEM MATCHES "Darwin")
+        list(APPEND MICROCHIP_SEARCH_PATH /Applications/microchip)
     endif()
 
     set(candidate_paths)
