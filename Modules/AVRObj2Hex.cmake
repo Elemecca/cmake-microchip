@@ -50,7 +50,7 @@ function(avr_obj2hex target)
     add_custom_command(
         TARGET ${target} POST_BUILD
         WORKING_DIRECTORY ${dir}/$<CONFIG>
-        COMMAND "${AVR_OBJ2HEX}" -O ihex "${in_f}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.elf" "${out_f}"
+        COMMAND "${AVR_OBJ2HEX}" -O ihex ${ARGN} "${in_f}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.elf" "${out_f}"
         BYPRODUCTS ${dir}/$<CONFIG>/${out_f}
         VERBATIM
     )

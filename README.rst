@@ -3,8 +3,7 @@ CMake for the Microchip Toolchain
 #################################
 
 This project provides toolchains and other support modules to enable
-using `CMake`_ with the `Microchip compilers`_, although presently only
-XC16 is supported.
+using `CMake`_ with the `Microchip compilers`_.
 
 .. _CMake: https://cmake.org/
 .. _Microchip compilers: http://www.microchip.com/mplab/compilers
