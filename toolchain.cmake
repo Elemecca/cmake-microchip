@@ -21,7 +21,8 @@
 
 
 # CMP0057 (IN_LIST operator) since 3.3
-cmake_minimum_required(VERSION 3.3)
+# CMP0058 (BYPRODUCTS option for add_costum_command) since 3.2 but starting with 3.20 it supports generator expressions
+cmake_minimum_required(VERSION 3.20)
 
 
 # record the directory containing this script
