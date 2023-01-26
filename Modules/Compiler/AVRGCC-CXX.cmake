@@ -12,39 +12,33 @@
 #  substitute the full License text for the above reference.)
 
 # called by `CMakeCInformation`
-# to configure the XC8CC compiler interface for C files
-# this supports the xc8-cc CLI driver from XC8 v2.x
+# to configure the AVR GCC compiler interface for C files
 
+string(TOLOWER ${MICROCHIP_MCU_MODEL} MMCU)
 
-string(APPEND CMAKE_C_FLAGS_INIT
+string(APPEND CMAKE_CXX_FLAGS_INIT
     # build for the configured MCU model
-    " -mcpu=${MICROCHIP_MCU_MODEL}"
+    " -mmcu=${MMCU}"
 )
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_8")
-    string(APPEND CMAKE_C_FLAGS_INIT
-    # fail if the requested optimization level is forbidden by the license
-    " --nofallback"
-    )
-endif()
 
-set(CMAKE_C_OUTPUT_EXTENSION ".p1")
+set(CMAKE_CXX_OUTPUT_EXTENSION ".p1")
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 
-set(CMAKE_C_COMPILE_OBJECT)
-string(APPEND CMAKE_C_COMPILE_OBJECT
-    "<CMAKE_C_COMPILER> <FLAGS> <DEFINES> <INCLUDES>"
+set(CMAKE_CXX_COMPILE_OBJECT)
+string(APPEND CMAKE_CXX_COMPILE_OBJECT
+    "<CMAKE_CXX_COMPILER> <FLAGS> <DEFINES> <INCLUDES>"
     "   -o <OBJECT>   -c <SOURCE>"
 )
 
-set(CMAKE_C_LINK_EXECUTABLE)
-string(APPEND CMAKE_C_LINK_EXECUTABLE
-    "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS>"
+set(CMAKE_CXX_LINK_EXECUTABLE)
+string(APPEND CMAKE_CXX_LINK_EXECUTABLE
+    "<CMAKE_CXX_COMPILER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS>"
     "   <OBJECTS>   <LINK_LIBRARIES>"
     "   -o <TARGET>"
 )
 
-set(CMAKE_C_CREATE_STATIC_LIBRARY)
-string(APPEND CMAKE_C_CREATE_STATIC_LIBRARY
+set(CMAKE_CXX_CREATE_STATIC_LIBRARY)
+string(APPEND CMAKE_CXX_CREATE_STATIC_LIBRARY
     "<CMAKE_AR> -r <TARGET>"
     "   <OBJECTS> <LINK_LIBRARIES>"
 )

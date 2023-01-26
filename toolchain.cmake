@@ -21,7 +21,8 @@
 
 
 # CMP0057 (IN_LIST operator) since 3.3
-cmake_minimum_required(VERSION 3.3)
+# CMP0058 (BYPRODUCTS option for add_costum_command) since 3.2 but starting with 3.20 it supports generator expressions
+cmake_minimum_required(VERSION 3.20)
 
 
 # record the directory containing this script
@@ -56,12 +57,15 @@ set(MICROCHIP_MCU "${MICROCHIP_MCU}"
     CACHE STRING "full model number of the target Microchip MCU"
 )
 
-
 # known 8-bit MCU families
 list(APPEND MICROCHIP_FAMILIES_8
     PIC12F
     PIC16F
     PIC18F
+    ATtiny
+    ATxmega
+    ATmega
+    AVRDA
 )
 
 # known 16-bit MCU families
@@ -112,7 +116,28 @@ elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
             "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
         )
     endif()
-
+    
+elseif(MICROCHIP_MCU MATCHES "^(AT)(tiny|mega|xmega)([a-zA-Z0-9]+)$")
+    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}")
+    set(MICROCHIP_MCU_MODEL  "${MICROCHIP_MCU}")
+    if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
+        set(CMAKE_SYSTEM_PROCESSOR "AVR")
+    else()
+        message(FATAL_ERROR
+            "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
+        )
+    endif()
+    
+elseif(MICROCHIP_MCU MATCHES "^(AVR)([0-9]+)(DA)([0-9]+)$")
+    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
+    set(MICROCHIP_MCU_MODEL  "${MICROCHIP_MCU}")
+    if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
+        set(CMAKE_SYSTEM_PROCESSOR "AVR")
+    else()
+        message(FATAL_ERROR
+            "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
+        )
+    endif()
 else()
     message(FATAL_ERROR
         "Invalid MICROCHIP_MCU value '${MICROCHIP_MCU}'."
