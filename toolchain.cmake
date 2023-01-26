@@ -65,6 +65,7 @@ list(APPEND MICROCHIP_FAMILIES_8
     ATtiny
     ATxmega
     ATmega
+    AVRDA
 )
 
 # known 16-bit MCU families
@@ -116,7 +117,7 @@ elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
         )
     endif()
     
-elseif(MICROCHIP_MCU MATCHES "^(AT)(tiny|xmega)([a-zA-Z0-9]+)$")
+elseif(MICROCHIP_MCU MATCHES "^(AT)(tiny|mega|xmega)([a-zA-Z0-9]+)$")
     set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}")
     set(MICROCHIP_MCU_MODEL  "${MICROCHIP_MCU}")
     if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
@@ -126,7 +127,17 @@ elseif(MICROCHIP_MCU MATCHES "^(AT)(tiny|xmega)([a-zA-Z0-9]+)$")
             "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
         )
     endif()
-
+    
+elseif(MICROCHIP_MCU MATCHES "^(AVR)([0-9]+)(DA)([0-9]+)$")
+    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
+    set(MICROCHIP_MCU_MODEL  "${MICROCHIP_MCU}")
+    if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
+        set(CMAKE_SYSTEM_PROCESSOR "AVR")
+    else()
+        message(FATAL_ERROR
+            "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
+        )
+    endif()
 else()
     message(FATAL_ERROR
         "Invalid MICROCHIP_MCU value '${MICROCHIP_MCU}'."
