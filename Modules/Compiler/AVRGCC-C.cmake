@@ -12,20 +12,14 @@
 #  substitute the full License text for the above reference.)
 
 # called by `CMakeCInformation`
-# to configure the XC8CC compiler interface for C files
-# this supports the xc8-cc CLI driver from XC8 v2.x
+# to configure the AVR GCC compiler interface for C files
 
+string(TOLOWER ${MICROCHIP_MCU_MODEL} MMCU)
 
 string(APPEND CMAKE_C_FLAGS_INIT
     # build for the configured MCU model
-    " -mcpu=${MICROCHIP_MCU_MODEL}"
+    " -mmcu=${MMCU}"
 )
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "PIC_8")
-    string(APPEND CMAKE_C_FLAGS_INIT
-    # fail if the requested optimization level is forbidden by the license
-    " --nofallback"
-    )
-endif()
 
 set(CMAKE_C_OUTPUT_EXTENSION ".p1")
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
