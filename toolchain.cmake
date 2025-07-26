@@ -20,8 +20,7 @@
 # to provide information about the target platform
 
 
-# CMP0057 (IN_LIST operator) since 3.3
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.22)
 
 
 # record the directory containing this script
