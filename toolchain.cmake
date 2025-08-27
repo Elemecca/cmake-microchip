@@ -22,7 +22,6 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-
 # record the directory containing this script
 # it will be used as the base for finding our other files
 set(MICROCHIP_ROOT ${CMAKE_CURRENT_LIST_DIR})
@@ -48,6 +47,10 @@ set(CMAKE_SYSTEM_NAME "MicrochipMCU")
 #
 # that makes it possible to set a per-project default model in
 # CMakeLists.txt that can still be overridden on the command line
+include(MicrochipBin2Hex)
+include(MicrochipIPE)
+include(MicrochipPathSearch)
+
 if(NOT MICROCHIP_MCU)
     set(MICROCHIP_MCU "generic16")
 endif()
@@ -97,15 +100,18 @@ elseif(MICROCHIP_MCU STREQUAL "generic32")
     set(CMAKE_SYSTEM_PROCESSOR "PIC_32")
 
 elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
-    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}")
-    set(MICROCHIP_MCU_MODEL  "${CMAKE_MATCH_2}${CMAKE_MATCH_3}")
+    set(MICROCHIP_MCU_FAMILY "${CMAKE_MATCH_1}${CMAKE_MATCH_2}" CACHE STRING "Familia de chip")
+    set(MICROCHIP_MCU_MODEL  "${CMAKE_MATCH_2}${CMAKE_MATCH_3}" CACHE STRING "Modelo de chip")
 
     if(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_8)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_8")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     elseif(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_16)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_16")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     elseif(MICROCHIP_MCU_FAMILY IN_LIST MICROCHIP_FAMILIES_32)
         set(CMAKE_SYSTEM_PROCESSOR "PIC_32")
+        add_definitions(-D__${MICROCHIP_MCU_FAMILY}__ -D__${MICROCHIP_MCU_MODEL}__)
     else()
         message(FATAL_ERROR
             "Unsupported MCU family '${MICROCHIP_MCU_FAMILY}'."
@@ -115,5 +121,61 @@ elseif(MICROCHIP_MCU MATCHES "^(dsPIC|PIC)(32M[XZ]|[0-9]+[A-Z])([A-Z0-9]+)$")
 else()
     message(FATAL_ERROR
         "Invalid MICROCHIP_MCU value '${MICROCHIP_MCU}'."
+    )
+endif()
+
+#En caso de estar ya configurado el compilador, restauro los flags
+message(STATUS "microchip toolchain")
+if(MICROCHIP_XC32_PATH)
+    set(link_flags "")
+    set(compile_flags "")
+    
+    if(MICROCHIP_MCU_FAMILY STREQUAL "PIC32MX")
+        set(lib_directory pic32mx)
+    else()
+        set(lib_directory pic32-libs)
+    endif()
+    
+    include_directories(SYSTEM ${MICROCHIP_XC32_PATH}/${lib_directory}/include)
+
+    list(APPEND compile_flags
+            "-mprocessor=${MICROCHIP_MCU_MODEL}"
+    )
+    string(APPEND link_flags
+            " -mprocessor=${MICROCHIP_MCU_MODEL}"
+    )
+    if(MICROCHIP_LINK_SCRIPT OR MICROCHIP_MIN_HEAP_SIZE)
+            string(APPEND link_flags
+                    " -Wl"
+            )
+            if(MICROCHIP_LINK_SCRIPT)
+                    string(APPEND link_flags
+                            ",--script=\"${MICROCHIP_LINK_SCRIPT}\""
+                    )
+            endif()
+            if(MICROCHIP_MIN_HEAP_SIZE)
+                    string(APPEND link_flags
+                            ",--defsym=_min_heap_size=${MICROCHIP_MIN_HEAP_SIZE}"
+                    )
+            endif()
+            if(MICROCHIP_MAP_FILE)
+                    string(APPEND link_flags
+                            ",-Map=\"${MICROCHIP_MAP_FILE}\""
+                    )
+                    set_property(DIRECTORY APPEND
+                            PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+                            "${MICROCHIP_MAP_FILE}"
+                    )
+            endif()
+    endif()
+    string(APPEND CMAKE_C_LINK_FLAGS
+        ${link_flags}
+    )
+    add_compile_options(
+        ${compile_flags}
+    )
+    add_compile_options(
+        "$<$<CONFIG:RELASE>:-DNDEBUG>"
+        "$<$<CONFIG:DEBUG>:-g>"
     )
 endif()
